@@ -119,8 +119,8 @@
             if (settings.afterMenuHide) { settings.afterMenuHide(); }
 
             // Set everything back to default
-            toggleButton.removeClass(settings.classNameOpen).addClass(settings.classNameOpen).html(settings.toggleButtonNameClosed);
-            subToggle.removeClass(settings.classNameOpen).addClass(settings.classNameOpen).html(settings.subToggleNameClosed);
+            toggleButton.removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.toggleButtonNameClosed);
+            subToggle.removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.subToggleNameClosed);
         }
 
 
