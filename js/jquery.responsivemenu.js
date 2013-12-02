@@ -14,11 +14,13 @@
         var settings = $.extend(true, {
             // Default values
             menuElement: this.selector,
-            toggleButton: 'menu_toggle_button',
-            toggleButtonName: '≡',
+            toggleButtonClass: 'menu_toggle_button',
+            toggleButtonNameClosed: '≡',
+            toggleButtonNameOpen: 'open',
             toggleButtonLocation: 'before',
-            subToggle: 'sub_toggle',
-            subToggleName: '+',
+            subToggleClass: 'sub_toggle',
+            subToggleNameClosed: '+',
+            subToggleNameOpen: '-',
             subToggleLocation: 'after',
             mobileToDesktopSize: 600,
             animations: true,
@@ -42,25 +44,25 @@
 
 
         // Check if the main toggle button exists and if not create it
-        if(!$('div.' + settings.toggleButton).length) {
+        if(!$('div.' + settings.toggleButtonClass).length) {
             // Creating the toggle button
-            var toggleButtonMarkup = '<div class="' + settings.toggleButton + '">' + settings.toggleButtonName + '</div>';
+            var toggleButtonMarkup = '<div class="' + settings.toggleButtonClass + '">' + settings.toggleButtonNameClosed + '</div>';
             if (settings.toggleButtonLocation == "after") {
-                $(settings.menuElement).after(toggleButtonMarkup).parent().find('.' + settings.toggleButton).accessibleHide();
+                $(settings.menuElement).after(toggleButtonMarkup).parent().find('.' + settings.toggleButtonClass).accessibleHide();
             } else {
-                $(settings.menuElement).before(toggleButtonMarkup).parent().find('.' + settings.toggleButton).accessibleHide();
+                $(settings.menuElement).before(toggleButtonMarkup).parent().find('.' + settings.toggleButtonClass).accessibleHide();
             }
         }
 
 
         // Check if the sub toggle buttons exists and if not create them
-        if(!$('span.' + settings.subToggle).length) {
+        if(!$('span.' + settings.subToggleClass).length) {
             // Creating the sub toggle buttons
-            var subToggleMarkup = '<span class="' + settings.subToggle + '">' + settings.subToggleName + '</span>';
+            var subToggleMarkup = '<span class="' + settings.subToggleClass + '">' + settings.subToggleNameClosed + '</span>';
             if (settings.subToggleLocation == "before") {
-                $(settings.menuElement + ' li').has('ul').find('>a').before(subToggleMarkup).find('.' + settings.subToggle).accessibleHide();
+                $(settings.menuElement + ' li').has('ul').find('>a').before(subToggleMarkup).find('.' + settings.subToggleClass).accessibleHide();
             } else {
-                $(settings.menuElement + ' li').has('ul').find('>a').after(subToggleMarkup).find('.' + settings.subToggle).accessibleHide();
+                $(settings.menuElement + ' li').has('ul').find('>a').after(subToggleMarkup).find('.' + settings.subToggleClass).accessibleHide();
             }
         }
 
@@ -68,8 +70,8 @@
         // Setting vars
         var menuElem = settings.menuElement,
             menuSubElem = settings.menuElement + ' ul',
-            toggleButton = $('.' + settings.toggleButton),
-            subToggle = $('.' + settings.subToggle);
+            toggleButton = $('.' + settings.toggleButtonClass),
+            subToggle = $('.' + settings.subToggleClass);
 
 
         // Add appropriate body class
@@ -139,6 +141,7 @@
                         if (settings.afterMainToggle) { settings.afterMainToggle(); }
                     });
                 }
+                $(this).html(settings.toggleButtonNameOpen);
             } else {
                 // Animate the menu?
                 if (settings.animations == true) {
@@ -152,6 +155,7 @@
                 } else {
                     $(menuElem).accessibleHide();
                 }
+                $(this).html(settings.toggleButtonNameClosed);
             }
         });
 
@@ -171,6 +175,8 @@
                 } else {
                     $(this).siblings('ul').accessibleHide();
                 }
+                $(this).html(settings.subToggleNameClosed);
+
             } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
                 $(this).siblings('ul').accessibleShow();
                 // Animate the menu?
@@ -181,6 +187,7 @@
                         if (settings.afterSubToggle) { settings.afterSubToggle(); }
                     });
                 }
+                $(this).html(settings.subToggleNameOpen);
             }
         });
     };
