@@ -22,6 +22,8 @@
             subToggleNameClosed: '+',
             subToggleNameOpen: '-',
             subToggleLocation: 'after',
+            classNameClosed: 'rm-closed',
+            classNameOpen: 'rm-open',
             mobileToDesktopSize: 600,
             animations: true,
             animationSpeed: 200,
@@ -46,7 +48,7 @@
         // Check if the main toggle button exists and if not create it
         if(!$('div.' + settings.toggleButtonClass).length) {
             // Creating the toggle button
-            var toggleButtonMarkup = '<div class="' + settings.toggleButtonClass + ' closed">' + settings.toggleButtonNameClosed + '</div>';
+            var toggleButtonMarkup = '<div class="' + settings.toggleButtonClass + ' ' + settings.classNameClosed +'">' + settings.toggleButtonNameClosed + '</div>';
             if (settings.toggleButtonLocation == "after") {
                 $(settings.menuElement).after(toggleButtonMarkup).parent().find('.' + settings.toggleButtonClass).accessibleHide();
             } else {
@@ -58,7 +60,7 @@
         // Check if the sub toggle buttons exists and if not create them
         if(!$('span.' + settings.subToggleClass).length) {
             // Creating the sub toggle buttons
-            var subToggleMarkup = '<span class="' + settings.subToggleClass + ' closed">' + settings.subToggleNameClosed + '</span>';
+            var subToggleMarkup = '<span class="' + settings.subToggleClass + ' ' + settings.classNameClosed + '">' + settings.subToggleNameClosed + '</span>';
             if (settings.subToggleLocation == "before") {
                 $(settings.menuElement + ' li').has('ul').find('>a').before(subToggleMarkup).find('.' + settings.subToggleClass).accessibleHide();
             } else {
@@ -115,6 +117,10 @@
             }
             // After Menu Hide
             if (settings.afterMenuHide) { settings.afterMenuHide(); }
+
+            // Set everything back to default
+            toggleButton.removeClass(settings.classNameOpen).addClass(settings.classNameOpen).html(settings.toggleButtonNameClosed);
+            subToggle.removeClass(settings.classNameOpen).addClass(settings.classNameOpen).html(settings.subToggleNameClosed);
         }
 
 
@@ -141,7 +147,7 @@
                         if (settings.afterMainToggle) { settings.afterMainToggle(); }
                     });
                 }
-                $(this).removeClass('closed').addClass('open').html(settings.toggleButtonNameOpen);
+                $(this).removeClass(settings.classNameClosed).addClass(settings.classNameOpen).html(settings.toggleButtonNameOpen);
             } else {
                 // Animate the menu?
                 if (settings.animations == true) {
@@ -155,7 +161,7 @@
                 } else {
                     $(menuElem).accessibleHide();
                 }
-                $(this).removeClass('open').addClass('closed').html(settings.toggleButtonNameClosed);
+                $(this).removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.toggleButtonNameClosed);
             }
         });
 
@@ -175,7 +181,7 @@
                 } else {
                     $(this).siblings('ul').accessibleHide();
                 }
-                $(this).removeClass('open').addClass('closed').html(settings.subToggleNameClosed);
+                $(this).removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.subToggleNameClosed);
 
             } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
                 $(this).siblings('ul').accessibleShow();
@@ -187,7 +193,7 @@
                         if (settings.afterSubToggle) { settings.afterSubToggle(); }
                     });
                 }
-                $(this).removeClass('closed').addClass('open').html(settings.subToggleNameOpen);
+                $(this).removeClass(settings.classNameClosed).addClass(settings.classNameOpen).html(settings.subToggleNameOpen);
             }
         });
     };
