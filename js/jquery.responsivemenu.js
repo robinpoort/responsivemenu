@@ -16,7 +16,7 @@
             menuElement: this.selector,
             toggleButtonClass: 'menu_toggle_button',
             toggleButtonNameClosed: '≡',
-            toggleButtonNameOpen: 'open',
+            toggleButtonNameOpen: '≡',
             toggleButtonLocation: 'before',
             subToggleClass: 'sub_toggle',
             subToggleNameClosed: '+',
@@ -46,7 +46,7 @@
         // Check if the main toggle button exists and if not create it
         if(!$('div.' + settings.toggleButtonClass).length) {
             // Creating the toggle button
-            var toggleButtonMarkup = '<div class="' + settings.toggleButtonClass + '">' + settings.toggleButtonNameClosed + '</div>';
+            var toggleButtonMarkup = '<div class="' + settings.toggleButtonClass + ' closed">' + settings.toggleButtonNameClosed + '</div>';
             if (settings.toggleButtonLocation == "after") {
                 $(settings.menuElement).after(toggleButtonMarkup).parent().find('.' + settings.toggleButtonClass).accessibleHide();
             } else {
@@ -58,7 +58,7 @@
         // Check if the sub toggle buttons exists and if not create them
         if(!$('span.' + settings.subToggleClass).length) {
             // Creating the sub toggle buttons
-            var subToggleMarkup = '<span class="' + settings.subToggleClass + '">' + settings.subToggleNameClosed + '</span>';
+            var subToggleMarkup = '<span class="' + settings.subToggleClass + ' closed">' + settings.subToggleNameClosed + '</span>';
             if (settings.subToggleLocation == "before") {
                 $(settings.menuElement + ' li').has('ul').find('>a').before(subToggleMarkup).find('.' + settings.subToggleClass).accessibleHide();
             } else {
@@ -141,7 +141,7 @@
                         if (settings.afterMainToggle) { settings.afterMainToggle(); }
                     });
                 }
-                $(this).html(settings.toggleButtonNameOpen);
+                $(this).removeClass('closed').addClass('open').html(settings.toggleButtonNameOpen);
             } else {
                 // Animate the menu?
                 if (settings.animations == true) {
@@ -155,7 +155,7 @@
                 } else {
                     $(menuElem).accessibleHide();
                 }
-                $(this).html(settings.toggleButtonNameClosed);
+                $(this).removeClass('open').addClass('closed').html(settings.toggleButtonNameClosed);
             }
         });
 
@@ -175,7 +175,7 @@
                 } else {
                     $(this).siblings('ul').accessibleHide();
                 }
-                $(this).html(settings.subToggleNameClosed);
+                $(this).removeClass('open').addClass('closed').html(settings.subToggleNameClosed);
 
             } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
                 $(this).siblings('ul').accessibleShow();
@@ -187,7 +187,7 @@
                         if (settings.afterSubToggle) { settings.afterSubToggle(); }
                     });
                 }
-                $(this).html(settings.subToggleNameOpen);
+                $(this).removeClass('closed').addClass('open').html(settings.subToggleNameOpen);
             }
         });
     };
