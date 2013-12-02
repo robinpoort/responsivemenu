@@ -1,0 +1,49 @@
+.accessible-hide {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px; width: 1px;
+  margin: -1px; padding: 0; border: 0;
+}
+
+@media screen and (min-width: 600px) {
+  body.js-enabled ul.responsive-menu li {
+    position: relative;
+  }
+
+  body.js-enabled ul.responsive-menu ul {
+    display: none;
+  }
+
+  body.js-enabled ul.responsive-menu li:hover > ul {
+    display: block !important;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+
+  body.js-enabled ul.responsive-menu ul li:hover ul {
+    top: 0;
+    left: 100%;
+  }
+}
+
+.menu_toggle_button,
+.sub_toggle {
+  display: inline-block;
+  cursor: pointer;
+}
+.menu_toggle_button {
+  font-size: 44px;
+  line-height: 44px;
+  text-align: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.rm-menu_position_right {
+  width: 85%;
+  text-align: right;
+  background: red;
+  float: right;
+}
