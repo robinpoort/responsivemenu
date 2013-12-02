@@ -28,3 +28,41 @@ body {
   text-align: center;
   line-height: 22px;
 }
+
+.menu_container ul:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.menu_container ul {
+  margin: 0;
+  padding: 0;
+}
+
+.menu_container ul li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #aaa;
+}
+
+.menu_container ul li a {
+  padding: 5px 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.menu_container ul li a:hover {
+  background: #888;
+}
+
+@media screen and (min-width: 600px) {
+  .menu_container ul li {
+    float: left;
+    margin: 0 5px 0 0;
+  }
+  .menu_container ul li a {
+    display: block;
+  }
+}
