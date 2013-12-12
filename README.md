@@ -234,6 +234,22 @@ __Example:__
     </script>
 
 
+Example
+-----------
+	<script type="text/javascript">
+    $(document).ready(function(){
+        $(".responsive-menu").responsiveMenu({
+            toggleButtonNameClosed: 'Open menu',
+            toggleButtonNameOpen: 'Close menu',
+            afterMainToggle: function() {
+                alert('Menu just opened/closed');
+            }
+        });
+    });
+	</script>
+
+
+
 In the wild
 -----------
 
