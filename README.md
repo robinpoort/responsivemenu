@@ -106,12 +106,6 @@ Class name to add to opened elements
 
 __Default:__ 'rm-open'
 
-### mobileToDesktopSize:
-
-Window width for mobile menu to become desktop menu
-
-__Default:__ 600
-
 ### animations:
 
 Slide animate the menus? Using slideDown but replacing display: none with a class so this stay accessible
@@ -232,6 +226,10 @@ __Example:__
         });
     });
     </script>
+
+### Breakpoint
+
+Change the breakpoint from mobile to desktop menu style in the CSS files
 
 
 Example

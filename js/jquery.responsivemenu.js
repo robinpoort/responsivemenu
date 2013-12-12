@@ -24,7 +24,6 @@
             subToggleLocation: 'after',
             classNameClosed: 'rm-closed',
             classNameOpen: 'rm-open',
-            mobileToDesktopSize: 600,
             animations: true,
             animationSpeed: 200,
             beforeMenuHide: null,
@@ -77,8 +76,8 @@
 
 
         // Add appropriate body class
-        function addBodyClass(width) {
-            if(width < settings.mobileToDesktopSize ) {
+        function addBodyClass(width, bodyZIndex) {
+            if( bodyZIndex == 1 ) {
                 $('body').removeClass('menu-unfolded').addClass('menu-folded');
             } else {
                 $('body').removeClass('menu-folded').addClass('menu-unfolded');
@@ -87,11 +86,11 @@
 
 
         // Toggle button action
-        function toggleButtons(width) {
+        function toggleButtons(width, bodyZIndex) {
             // Before Menu Hide
             if (settings.beforeMenuHide) { settings.beforeMenuHide(); }
             // If screen size is small
-            if(width < settings.mobileToDesktopSize ) {
+            if( bodyZIndex == 0 ) {
                 // Main toggle
                 $(menuElem).accessibleHide();
                 if (toggleButton.hasClass('accessible-hide')) {
@@ -104,7 +103,7 @@
                 }
             }
             // If screen size is big
-            if(width >= settings.mobileToDesktopSize ) {
+            if( bodyZIndex == 1 ) {
                 // Main toggle
                 $(menuElem).accessibleShow();
                 toggleButton.accessibleHide();
@@ -128,8 +127,9 @@
         $(window).on('resize ready', function(event) {
             // Get the window width or get the body width as a fallback
             var width = event.target.innerWidth || $('body').width();
-            toggleButtons(width);
-            addBodyClass(width);
+            var bodyZIndex = $('body').css('z-index');
+            toggleButtons(width, bodyZIndex);
+            addBodyClass(width, bodyZIndex);
         });
 
 
