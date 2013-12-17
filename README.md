@@ -1,7 +1,7 @@
 responsivemenu
 ==============
 
-A jQuery plugin to create accessible responsive menus
+A jQuery plugin to create mobile-first accessible responsive menus
 
 
 Requires
