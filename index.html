@@ -25,7 +25,81 @@
 
     <!-- Start responsive menu -->
     <div class="menu_container">
-        <ul class="responsive-menu">
+        <ul class="responsive-menu test1">
+            <li>
+                <a href="#">Link1</a>
+            </li>
+            <li>
+                <a href="#">Link2</a>
+            </li>
+            <li>
+                <a href="#">Link3</a>
+            </li>
+            <li>
+                <a href="#">Link4</a>
+                <ul>
+                    <li>
+                        <a href="#">Sublink1</a>
+                    </li>
+                    <li>
+                        <a href="#">Sublink2</a>
+                    </li>
+                    <li>
+                        <a href="#">Sublink3</a>
+                        <ul>
+                            <li>
+                                <a href="#">Sublink1</a>
+                            </li>
+                            <li>
+                                <a href="#">Sublink2</a>
+                            </li>
+                            <li>
+                                <a href="#">Sublink3</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">Sublink1</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Sublink2</a>
+                                        <ul>
+                                            <li>
+                                                <a href="#">Sublink1</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Sublink2</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Sublink3</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">Sublink3</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">Link5</a>
+            </li>
+            <li>
+                <a href="#">Link6</a>
+            </li>
+            <li>
+                <a href="#">Link7</a>
+            </li>
+        </ul>
+    </div>
+    <!-- End responsive menu -->
+
+
+
+    <!-- Start responsive menu -->
+    <div class="menu_container">
+        <ul class="responsive-menu test2">
             <li>
                 <a href="#">Link1</a>
             </li>
@@ -113,7 +187,8 @@
 <script type="text/javascript" src="js/jquery.responsivemenu.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        $('.responsive-menu').responsiveMenu();
+        $('.test1').responsiveMenu();
+        $('.test2').responsiveMenu();
     });
 </script>
 

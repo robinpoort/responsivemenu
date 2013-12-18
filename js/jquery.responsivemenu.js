@@ -6,7 +6,7 @@
  * http://www.robinpoort.com
  */
 
-;(function($) {
+(function($) {
 
     $.responsiveMenu = function(element, options) {
 
@@ -41,6 +41,8 @@
         // the "constructor" method that gets called when the object is created
         plugin.init = function() {
 
+            console.log( $(this).selector );
+
             // Merging default and user settings
             plugin.settings = $.extend({}, defaults, options);
 
@@ -51,6 +53,7 @@
             $.fn.accessibleShow = function() {
                 this.removeClass('accessible-hide');
             }
+
 
             // Check if the main toggle button exists and if not create it
             if( !$(plugin.settings.toggleButtonClass).length ) {
@@ -78,8 +81,8 @@
             // Setting vars
             var menuElem = plugin.settings.menuElement,
                 menuSubElem = $(plugin.settings.menuElement).find('li>ul'),
-                toggleButton = $('.' + plugin.settings.toggleButtonClass),
-                subToggle = $('.' + plugin.settings.subToggleClass);
+                toggleButton = $(menuElem).siblings('.' + plugin.settings.toggleButtonClass),
+                subToggle = $(menuElem).find('.' + plugin.settings.subToggleClass);
 
 
             // Add appropriate classes
@@ -142,6 +145,7 @@
 
             // Use the toggle button
             toggleButton.click(function() {
+
                 // Before Main toggle
                 if (plugin.settings.beforeMainToggle) { plugin.settings.beforeMainToggle(); }
 
@@ -154,12 +158,11 @@
                             if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
                         });
                     }
-                    $(this).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
+                    $(toggleButton).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
                 } else {
                     // Animate the menu?
                     if (plugin.settings.animations == true) {
                         $(menuElem).slideUp(plugin.settings.animationSpeed, function() {
-                            $(window).trigger('resize');
                             $(menuElem).removeAttr('style');
                             $(menuElem).accessibleHide();
                             // After Main toggle
@@ -168,7 +171,7 @@
                     } else {
                         $(menuElem).accessibleHide();
                     }
-                    $(this).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
+                    $(toggleButton).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
                 }
             });
 
@@ -226,7 +229,9 @@
                 // in the jQuery version of the element
                 // store a reference to the plugin object
                 $(this).data('responsiveMenu', plugin);
+
             }
         });
     }
+
 })(jQuery);
