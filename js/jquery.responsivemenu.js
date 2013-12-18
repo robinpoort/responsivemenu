@@ -6,14 +6,13 @@
  * http://www.robinpoort.com
  */
 
-(function ($) {
+;(function($) {
 
-    $.fn.responsiveMenu = function(options) {
+    $.responsiveMenu = function(element, options) {
 
-        // Options
-        var settings = $.extend(true, {
-            // Default values
-            menuElement: this.selector,
+        // Defaults
+        var defaults = {
+            menuElement: $(element),
             toggleButtonClass: 'menu_toggle_button',
             toggleButtonNameClosed: '≡',
             toggleButtonNameOpen: '≡',
@@ -22,180 +21,212 @@
             subToggleNameClosed: '+',
             subToggleNameOpen: '-',
             subToggleLocation: 'after',
+            subToggleListClass: 'rm-subMenu',
             classNameClosed: 'rm-closed',
             classNameOpen: 'rm-open',
             animations: true,
-            animationSpeed: 200,
-            beforeMenuHide: null,
-            afterMenuHide: null,
-            beforeMainToggle: null,
-            afterMainToggle: null,
-            beforeSubToggle: null,
-            afterSubToggle: null
-        }, options);
-
-
-        // Accessible show and hide functions
-        $.fn.accessibleHide = function() {
-            this.addClass('accessible-hide');
-        }
-        $.fn.accessibleShow = function() {
-            this.removeClass('accessible-hide');
+            animationSpeed: 200
         }
 
+        // Plugin element
+        var plugin = this;
 
-        // Check if the main toggle button exists and if not create it
-        if(!$('div.' + settings.toggleButtonClass).length) {
-            // Creating the toggle button
-            var toggleButtonMarkup = '<div class="' + settings.toggleButtonClass + ' ' + settings.classNameClosed +'">' + settings.toggleButtonNameClosed + '</div>';
-            if (settings.toggleButtonLocation == "after") {
-                $(settings.menuElement).after(toggleButtonMarkup).parent().find('.' + settings.toggleButtonClass).accessibleHide();
-            } else {
-                $(settings.menuElement).before(toggleButtonMarkup).parent().find('.' + settings.toggleButtonClass).accessibleHide();
+        // Settings
+        plugin.settings = {}
+
+        // The element
+        var $element = $(element), // reference to the jQuery version of DOM element
+            element = element;     // reference to the actual DOM element
+
+        // the "constructor" method that gets called when the object is created
+        plugin.init = function() {
+
+            // Merging default and user settings
+            plugin.settings = $.extend({}, defaults, options);
+
+            // Accessible show and hide functions
+            $.fn.accessibleHide = function() {
+                this.addClass('accessible-hide');
             }
-        }
-
-
-        // Check if the sub toggle buttons exists and if not create them
-        if(!$('span.' + settings.subToggleClass).length) {
-            // Creating the sub toggle buttons
-            var subToggleMarkup = '<span class="' + settings.subToggleClass + ' ' + settings.classNameClosed + '">' + settings.subToggleNameClosed + '</span>';
-            if (settings.subToggleLocation == "before") {
-                $(settings.menuElement + ' li').has('ul').find('>a').before(subToggleMarkup).find('.' + settings.subToggleClass).accessibleHide();
-            } else {
-                $(settings.menuElement + ' li').has('ul').find('>a').after(subToggleMarkup).find('.' + settings.subToggleClass).accessibleHide();
+            $.fn.accessibleShow = function() {
+                this.removeClass('accessible-hide');
             }
-        }
 
-
-        // Setting vars
-        var menuElem = settings.menuElement,
-            menuSubElem = settings.menuElement + ' ul',
-            toggleButton = $('.' + settings.toggleButtonClass),
-            subToggle = $('.' + settings.subToggleClass);
-
-
-        // Add appropriate body class
-        function addBodyClass(width, bodyZIndex) {
-            if( bodyZIndex == 1 ) {
-                $('body').removeClass('menu-unfolded').addClass('menu-folded');
-            } else {
-                $('body').removeClass('menu-folded').addClass('menu-unfolded');
-            }
-        }
-
-
-        // Toggle button action
-        function toggleButtons(width, bodyZIndex) {
-            // Before Menu Hide
-            if (settings.beforeMenuHide) { settings.beforeMenuHide(); }
-            // If screen size is small
-            if( bodyZIndex == 0 ) {
-                // Main toggle
-                $(menuElem).accessibleHide();
-                if (toggleButton.hasClass('accessible-hide')) {
-                    toggleButton.accessibleShow();
-                }
-                // Sub toggle
-                $(menuSubElem).accessibleHide();
-                if (subToggle.hasClass('accessible-hide')) {
-                    subToggle.accessibleShow();
-                }
-            }
-            // If screen size is big
-            if( bodyZIndex == 1 ) {
-                // Main toggle
-                $(menuElem).accessibleShow();
-                toggleButton.accessibleHide();
-
-                // Sub toggle
-                if ($(menuSubElem).hasClass('accessible-hide')) {
-                    $(menuSubElem).accessibleShow();
-                }
-                subToggle.accessibleHide();
-            }
-            // After Menu Hide
-            if (settings.afterMenuHide) { settings.afterMenuHide(); }
-
-            // Set everything back to default
-            toggleButton.removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.toggleButtonNameClosed);
-            subToggle.removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.subToggleNameClosed);
-        }
-
-
-        // Run again on window resize and ready
-        $(window).on('resize ready', function(event) {
-            // Get the window width or get the body width as a fallback
-            var width = event.target.innerWidth || $('body').width();
-            var bodyZIndex = $('body').css('z-index');
-            toggleButtons(width, bodyZIndex);
-            addBodyClass(width, bodyZIndex);
-        });
-
-
-        // Use the toggle button
-        toggleButton.click(function() {
-            // Before Main toggle
-            if (settings.beforeMainToggle) { settings.beforeMainToggle(); }
-
-            if ($(menuElem).hasClass('accessible-hide')) {
-                $(menuElem).accessibleShow();
-                if (settings.animations == true) {
-                    $(menuElem).hide().slideDown(settings.animationSpeed, function() {
-                        $(menuElem).removeAttr('style');
-                        // After Main toggle
-                        if (settings.afterMainToggle) { settings.afterMainToggle(); }
-                    });
-                }
-                $(this).removeClass(settings.classNameClosed).addClass(settings.classNameOpen).html(settings.toggleButtonNameOpen);
-            } else {
-                // Animate the menu?
-                if (settings.animations == true) {
-                    $(menuElem).slideUp(settings.animationSpeed, function() {
-                        $(window).trigger('resize');
-                        $(menuElem).removeAttr('style');
-                        $(menuElem).accessibleHide();
-                        // After Main toggle
-                        if (settings.afterMainToggle) { settings.afterMainToggle(); }
-                    });
+            // Check if the main toggle button exists and if not create it
+            if( !$(plugin.settings.toggleButtonClass).length ) {
+                // Creating the toggle button
+                var toggleButtonMarkup = '<div class="' + plugin.settings.toggleButtonClass + ' ' + plugin.settings.classNameClosed +'">' + plugin.settings.toggleButtonNameClosed + '</div>';
+                if (plugin.settings.toggleButtonLocation == "after") {
+                    $(plugin.settings.menuElement).after(toggleButtonMarkup).parent().find('.' + plugin.settings.toggleButtonClass).accessibleHide();
                 } else {
+                    $(plugin.settings.menuElement).before(toggleButtonMarkup).parent().find('.' + plugin.settings.toggleButtonClass).accessibleHide();
+                }
+            }
+
+            // Check if the sub toggle buttons exists and if not create them
+            if( !$(plugin.settings.subToggleClass).length ) {
+                // Creating the sub toggle buttons
+                var subToggleMarkup = '<span class="' + plugin.settings.subToggleClass + ' ' + plugin.settings.classNameClosed + '">' + plugin.settings.subToggleNameClosed + '</span>';
+                if (plugin.settings.subToggleLocation == "before") {
+                    $(plugin.settings.menuElement).find('li').has('ul').find('>a').before(subToggleMarkup).find(plugin.settings.subToggleClass).accessibleHide();
+                } else {
+                    $(plugin.settings.menuElement).find('li').has('ul').find('>a').after(subToggleMarkup).find(plugin.settings.subToggleClass).accessibleHide();
+                }
+            }
+
+
+            // Setting vars
+            var menuElem = plugin.settings.menuElement,
+                menuSubElem = $(plugin.settings.menuElement).find('li>ul'),
+                toggleButton = $('.' + plugin.settings.toggleButtonClass),
+                subToggle = $('.' + plugin.settings.subToggleClass);
+
+
+            // Add appropriate classes
+            function addBodyClass(width, bodyZIndex) {
+                if( bodyZIndex == 1 ) {
+                    $('body').removeClass('menu-unfolded').addClass('menu-folded');
+                } else {
+                    $('body').removeClass('menu-folded').addClass('menu-unfolded');
+                }
+            }
+
+
+            // Toggle button action
+            function toggleButtons(width, bodyZIndex) {
+                // Before Menu Hide
+                if (plugin.settings.beforeMenuHide) { plugin.settings.beforeMenuHide(); }
+                // If screen size is small
+                if( bodyZIndex == 0 ) {
+                    // Main toggle
                     $(menuElem).accessibleHide();
+                    if (toggleButton.hasClass('accessible-hide')) {
+                        toggleButton.accessibleShow();
+                    }
+                    // Sub toggle
+                    $(menuSubElem).accessibleHide();
+                    if (subToggle.hasClass('accessible-hide')) {
+                        subToggle.accessibleShow();
+                    }
                 }
-                $(this).removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.toggleButtonNameClosed);
+                // If screen size is big
+                if( bodyZIndex == 1 ) {
+                    // Main toggle
+                    $(menuElem).accessibleShow();
+                    toggleButton.accessibleHide();
+
+                    // Sub toggle
+                    if ($(menuSubElem).hasClass('accessible-hide')) {
+                        $(menuSubElem).accessibleShow();
+                    }
+                    subToggle.accessibleHide();
+                }
+                // After Menu Hide
+                if (plugin.settings.afterMenuHide) { plugin.settings.afterMenuHide(); }
+
+                // Set everything back to default
+                toggleButton.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
+                subToggle.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
             }
-        });
 
-        // Use the sub toggle button
-        subToggle.click(function() {
-            // Before Sub toggle
-            if (settings.beforeSubToggle) { settings.beforeSubToggle(); }
 
-            if ($(this).siblings('ul:not(.accessible-hide)').length) {
-                // Animate the menu?
-                if (settings.animations == true) {
-                    $(this).siblings('ul').slideUp(settings.animationSpeed, function() {
-                        $(this).removeAttr('style').accessibleHide();
-                        // After Sub toggle
-                        if (settings.afterSubToggle) { settings.afterSubToggle(); }
-                    });
+            // Run again on window resize and ready
+            $(window).on('resize ready', function(event) {
+                // Get the window width or get the body width as a fallback
+                var width = event.target.innerWidth || $('body').width(),
+                    bodyZIndex = $('body').css('z-index');
+                toggleButtons(width, bodyZIndex);
+                addBodyClass(width, bodyZIndex);
+            });
+
+
+            // Use the toggle button
+            toggleButton.click(function() {
+                // Before Main toggle
+                if (plugin.settings.beforeMainToggle) { plugin.settings.beforeMainToggle(); }
+
+                if ($(menuElem).hasClass('accessible-hide')) {
+                    $(menuElem).accessibleShow();
+                    if (plugin.settings.animations == true) {
+                        $(menuElem).hide().slideDown(plugin.settings.animationSpeed, function() {
+                            $(menuElem).removeAttr('style');
+                            // After Main toggle
+                            if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                        });
+                    }
+                    $(this).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
                 } else {
-                    $(this).siblings('ul').accessibleHide();
+                    // Animate the menu?
+                    if (plugin.settings.animations == true) {
+                        $(menuElem).slideUp(plugin.settings.animationSpeed, function() {
+                            $(window).trigger('resize');
+                            $(menuElem).removeAttr('style');
+                            $(menuElem).accessibleHide();
+                            // After Main toggle
+                            if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                        });
+                    } else {
+                        $(menuElem).accessibleHide();
+                    }
+                    $(this).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
                 }
-                $(this).removeClass(settings.classNameOpen).addClass(settings.classNameClosed).html(settings.subToggleNameClosed);
+            });
 
-            } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
-                $(this).siblings('ul').accessibleShow();
-                // Animate the menu?
-                if (settings.animations == true) {
-                    $(this).siblings('ul').hide().slideDown(settings.animationSpeed, function() {
-                        $(this).removeAttr('style');
-                        // After Sub toggle
-                        if (settings.afterSubToggle) { settings.afterSubToggle(); }
-                    });
+            // Use the sub toggle button
+            subToggle.click(function() {
+                // Before Sub toggle
+                if (plugin.settings.beforeSubToggle) { plugin.settings.beforeSubToggle(); }
+
+                if ($(this).siblings('ul:not(.accessible-hide)').length) {
+                    // Animate the menu?
+                    if (plugin.settings.animations == true) {
+                        $(this).siblings('ul').slideUp(plugin.settings.animationSpeed, function() {
+                            $(this).removeAttr('style').accessibleHide();
+                            // After Sub toggle
+                            if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                        });
+                    } else {
+                        $(this).siblings('ul').accessibleHide();
+                    }
+                    $(this).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
+
+                } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
+                    $(this).siblings('ul').accessibleShow();
+                    // Animate the menu?
+                    if (plugin.settings.animations == true) {
+                        $(this).siblings('ul').hide().slideDown(plugin.settings.animationSpeed, function() {
+                            $(this).removeAttr('style');
+                            // After Sub toggle
+                            if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                        });
+                    }
+                    $(this).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.subToggleNameOpen);
                 }
-                $(this).removeClass(settings.classNameClosed).addClass(settings.classNameOpen).html(settings.subToggleNameOpen);
+            });
+
+        }
+
+        plugin.init();
+
+    }
+
+    // add the plugin to the jQuery.fn object
+    $.fn.responsiveMenu = function(options) {
+
+        // iterate through the DOM elements we are attaching the plugin to
+        return this.each(function() {
+
+            // if plugin has not already been attached to the element
+            if (undefined == $(this).data('responsiveMenu')) {
+
+                // create a new instance of the plugin
+                // pass the DOM element and the user-provided options as arguments
+                var plugin = new $.responsiveMenu(this, options);
+
+                // in the jQuery version of the element
+                // store a reference to the plugin object
+                $(this).data('responsiveMenu', plugin);
             }
         });
-    };
-
+    }
 })(jQuery);
