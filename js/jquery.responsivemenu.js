@@ -212,6 +212,7 @@
                 } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
                     // Animate the menu?
                     if (plugin.settings.animations == true) {
+                        $(this).siblings('ul').accessibleShow();
                         $(this).siblings('ul').hide().slideDown(plugin.settings.animationSpeed, function() {
                             $(this).removeAttr('style');
                             // After Sub toggle
