@@ -108,7 +108,7 @@
                         toggleButton.accessibleShow();
                     }
                     // Sub toggle
-                    if (subToggle.hasClass(plugin.settings.classNameClosed)) {
+                    if (!subToggle.hasClass(plugin.settings.classNameOpen)) {
                         $(menuSubElem).accessibleHide();
                     }
                     if (subToggle.hasClass('accessible-hide')) {
@@ -117,6 +117,10 @@
                 }
                 // If screen size is big
                 if( bodyZIndex == 1 ) {
+
+                    // Setting submenus to hide as standard when getting back smaller
+                    subToggle.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
+
                     // Main toggle
                     $(menuElem).accessibleShow();
                     toggleButton.accessibleHide();
@@ -129,10 +133,6 @@
                 }
                 // After Menu Hide
                 if (plugin.settings.afterMenuHide) { plugin.settings.afterMenuHide(); }
-
-                // Set everything back to default
-//                toggleButton.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
-//                subToggle.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
             }
 
 
@@ -156,14 +156,14 @@
                         $(menuElem).hide().slideDown(plugin.settings.animationSpeed, function() {
                             $(menuElem).removeAttr('style');
                             // After Main toggle
-                            $(window).trigger('resize');
                             if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                            $(window).trigger('resize');
                         });
                     } else {
                         $(menuElem).accessibleShow();
                         // After Main toggle
-                        $(window).trigger('resize');
                         if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                        $(window).trigger('resize');
                     }
                     $(toggleButton).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
                 } else {
@@ -173,14 +173,14 @@
                             $(menuElem).removeAttr('style');
                             $(menuElem).accessibleHide();
                             // After Main toggle
-                            $(window).trigger('resize');
                             if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                            $(window).trigger('resize');
                         });
                     } else {
                         $(menuElem).accessibleHide();
                         // After Main toggle
-                        $(window).trigger('resize');
                         if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                        $(window).trigger('resize');
                     }
                     $(toggleButton).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
                 }
@@ -197,14 +197,14 @@
                         $(this).siblings('ul').slideUp(plugin.settings.animationSpeed, function() {
                             $(this).removeAttr('style').accessibleHide();
                             // After Sub toggle
-                            $(window).trigger('resize');
                             if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                            $(window).trigger('resize');
                         });
                     } else {
                         $(this).siblings('ul').accessibleHide();
                         // After Sub toggle
-                        $(window).trigger('resize');
                         if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                        $(window).trigger('resize');
                     }
                     $(this).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
                 } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
@@ -214,14 +214,14 @@
                         $(this).siblings('ul').hide().slideDown(plugin.settings.animationSpeed, function() {
                             $(this).removeAttr('style');
                             // After Sub toggle
-                            $(window).trigger('resize');
                             if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                            $(window).trigger('resize');
                         });
                     } else {
                         $(this).siblings('ul').accessibleShow();
                         // After Sub toggle
-                        $(window).trigger('resize');
                         if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                        $(window).trigger('resize');
                     }
                     $(this).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.subToggleNameOpen);
                 }
