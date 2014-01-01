@@ -1,10 +1,10 @@
-"use strict";
-
-/*
+/* @preserve
  * Mobile first responsive menu
  * Copyright 2013 Robin Poort
  * http://www.robinpoort.com
  */
+
+"use strict";
 
 (function($) {
 
@@ -53,7 +53,6 @@
             $.fn.accessibleShow = function() {
                 this.removeClass('accessible-hide');
             }
-
 
             // Check if the main toggle button exists and if not create it
             if( !$(plugin.settings.toggleButtonClass).length ) {
@@ -145,7 +144,6 @@
                 toggleButtons(width, bodyZIndex);
                 addBodyClass(width, bodyZIndex);
             });
-
 
             // Use the toggle button
             toggleButton.click(function() {
