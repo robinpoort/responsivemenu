@@ -10,7 +10,6 @@
 
     $.responsiveMenu = function(element, options) {
 
-        // Defaults
         var defaults = {
             menuElement: $(element),
             toggleButtonClass: 'menu_toggle_button',
@@ -26,24 +25,16 @@
             classNameOpen: 'rm-open',
             animations: true,
             animationSpeed: 200
-        }
+        },
+            plugin = this;
 
-        // Plugin element
-        var plugin = this;
-
-        // Settings
         plugin.settings = {}
 
-        // The element
-        var $element = $(element), // reference to the jQuery version of DOM element
-            element = element;     // reference to the actual DOM element
+        var $element = $(element),
+            element = element;
 
-        // the "constructor" method that gets called when the object is created
         plugin.init = function() {
 
-            console.log( $(this).selector );
-
-            // Merging default and user settings
             plugin.settings = $.extend({}, defaults, options);
 
             // Accessible show and hide functions
@@ -79,9 +70,15 @@
 
             // Setting vars
             var menuElem = plugin.settings.menuElement,
-                menuSubElem = $(plugin.settings.menuElement).find('li>ul'),
+                menuSubElem = $(menuElem).find('li>ul'),
                 toggleButton = $(menuElem).siblings('.' + plugin.settings.toggleButtonClass),
-                subToggle = $(menuElem).find('.' + plugin.settings.subToggleClass);
+                subToggle = $(menuElem).find('.' + plugin.settings.subToggleClass),
+                animationSpeed = plugin.settings.animationSpeed;
+
+            // Set the animationspeed to 1 if animations are not being used
+            if ( plugin.settings.animations == false ) {
+                animationSpeed = 1;
+            }
 
 
             // Add appropriate classes
@@ -141,6 +138,7 @@
                 // Get the window width or get the body width as a fallback
                 var width = event.target.innerWidth || $('body').width(),
                     bodyZIndex = $('body').css('z-index');
+                // Functions
                 toggleButtons(width, bodyZIndex);
                 addBodyClass(width, bodyZIndex);
             });
@@ -149,39 +147,25 @@
             toggleButton.click(function() {
                 // Before Main toggle
                 if (plugin.settings.beforeMainToggle) { plugin.settings.beforeMainToggle(); }
-
+                // Hide the menu
                 if ($(menuElem).hasClass('accessible-hide')) {
-                    if (plugin.settings.animations == true) {
-                        $(menuElem).accessibleShow();
-                        $(menuElem).hide().slideDown(plugin.settings.animationSpeed, function() {
-                            $(menuElem).removeAttr('style');
-                            // After Main toggle
-                            if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
-                            $(window).trigger('resize');
-                        });
-                    } else {
-                        $(menuElem).accessibleShow();
+                    $(menuElem).accessibleShow();
+                    $(menuElem).hide().slideDown(animationSpeed, function() {
+                        $(menuElem).removeAttr('style');
                         // After Main toggle
                         if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
                         $(window).trigger('resize');
-                    }
+                    });
                     $(toggleButton).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
+                // Show the menu
                 } else {
-                    // Animate the menu?
-                    if (plugin.settings.animations == true) {
-                        $(menuElem).slideUp(plugin.settings.animationSpeed, function() {
-                            $(menuElem).removeAttr('style');
-                            $(menuElem).accessibleHide();
-                            // After Main toggle
-                            if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
-                            $(window).trigger('resize');
-                        });
-                    } else {
+                    $(menuElem).slideUp(animationSpeed, function() {
+                        $(menuElem).removeAttr('style');
                         $(menuElem).accessibleHide();
                         // After Main toggle
                         if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
                         $(window).trigger('resize');
-                    }
+                    });
                     $(toggleButton).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
                 }
             });
@@ -190,39 +174,24 @@
             subToggle.click(function() {
                 // Before Sub toggle
                 if (plugin.settings.beforeSubToggle) { plugin.settings.beforeSubToggle(); }
-
+                // Hide the submenu's
                 if ($(this).siblings('ul:not(.accessible-hide)').length) {
-                    // Animate the menu?
-                    if (plugin.settings.animations == true) {
-                        $(this).siblings('ul').slideUp(plugin.settings.animationSpeed, function() {
-                            $(this).removeAttr('style').accessibleHide();
-                            // After Sub toggle
-                            if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
-                            $(window).trigger('resize');
-                        });
-                    } else {
-                        $(this).siblings('ul').accessibleHide();
+                    $(this).siblings('ul').slideUp(animationSpeed, function() {
+                        $(this).removeAttr('style').accessibleHide();
                         // After Sub toggle
                         if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
                         $(window).trigger('resize');
-                    }
+                    });
                     $(this).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
+                // SHow the submenus
                 } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
-                    // Animate the menu?
-                    if (plugin.settings.animations == true) {
-                        $(this).siblings('ul').accessibleShow();
-                        $(this).siblings('ul').hide().slideDown(plugin.settings.animationSpeed, function() {
-                            $(this).removeAttr('style');
-                            // After Sub toggle
-                            if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
-                            $(window).trigger('resize');
-                        });
-                    } else {
-                        $(this).siblings('ul').accessibleShow();
+                    $(this).siblings('ul').accessibleShow();
+                    $(this).siblings('ul').hide().slideDown(animationSpeed, function() {
+                        $(this).removeAttr('style');
                         // After Sub toggle
                         if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
                         $(window).trigger('resize');
-                    }
+                    });
                     $(this).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.subToggleNameOpen);
                 }
             });
@@ -234,21 +203,15 @@
 
     // add the plugin to the jQuery.fn object
     $.fn.responsiveMenu = function(options) {
-
         // iterate through the DOM elements we are attaching the plugin to
         return this.each(function() {
-
             // if plugin has not already been attached to the element
             if (undefined == $(this).data('responsiveMenu')) {
-
                 // create a new instance of the plugin
-                // pass the DOM element and the user-provided options as arguments
                 var plugin = new $.responsiveMenu(this, options);
-
                 // in the jQuery version of the element
                 // store a reference to the plugin object
                 $(this).data('responsiveMenu', plugin);
-
             }
         });
     }
