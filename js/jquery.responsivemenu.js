@@ -11,6 +11,7 @@
     $.responsiveMenu = function(element, options) {
 
         var defaults = {
+            parentElement: $(element).parent(),
             menuElement: $(element),
             toggleButtonClass: 'menu_toggle_button',
             toggleButtonNameClosed: '≡',
@@ -24,7 +25,9 @@
             classNameClosed: 'rm-closed',
             classNameOpen: 'rm-open',
             animations: true,
-            animationSpeed: 200
+            animationSpeed: 200,
+            clickAside: false,
+            keyboard: false
         },
             plugin = this;
 
@@ -143,30 +146,57 @@
                 addBodyClass(width, bodyZIndex);
             });
 
+            function showMainLevel() {
+                $(menuElem).accessibleShow();
+                $(menuElem).hide().slideDown(animationSpeed, function() {
+                    $(menuElem).removeAttr('style');
+                    // After Main toggle
+                    if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                    $(window).trigger('resize');
+                });
+                $(toggleButton).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
+            }
+
+            function hideMainLevel() {
+                $(menuElem).slideUp(animationSpeed, function() {
+                    $(menuElem).removeAttr('style');
+                    $(menuElem).accessibleHide();
+                    // After Main toggle
+                    if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                    $(window).trigger('resize');
+                });
+                $(toggleButton).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
+            }
+
+            function showSubLevel(subElem) {
+                subElem.siblings('ul').accessibleShow();
+                subElem.siblings('ul').hide().slideDown(animationSpeed, function() {
+                    $(this).removeAttr('style');
+                    // After Sub toggle
+                    if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                    $(window).trigger('resize');
+                });
+                subElem.removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.subToggleNameOpen);
+            }
+
+            function hideSubLevel(subElem) {
+                subElem.siblings('ul').slideUp(animationSpeed, function() {
+                    $(this).removeAttr('style').accessibleHide();
+                    // After Sub toggle
+                    if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
+                    $(window).trigger('resize');
+                });
+                subElem.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
+            }
+
             // Use the toggle button
             toggleButton.click(function() {
                 // Before Main toggle
                 if (plugin.settings.beforeMainToggle) { plugin.settings.beforeMainToggle(); }
-                // Hide the menu
                 if ($(menuElem).hasClass('accessible-hide')) {
-                    $(menuElem).accessibleShow();
-                    $(menuElem).hide().slideDown(animationSpeed, function() {
-                        $(menuElem).removeAttr('style');
-                        // After Main toggle
-                        if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
-                        $(window).trigger('resize');
-                    });
-                    $(toggleButton).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
-                // Show the menu
+                    showMainLevel();
                 } else {
-                    $(menuElem).slideUp(animationSpeed, function() {
-                        $(menuElem).removeAttr('style');
-                        $(menuElem).accessibleHide();
-                        // After Main toggle
-                        if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
-                        $(window).trigger('resize');
-                    });
-                    $(toggleButton).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
+                    hideMainLevel();
                 }
             });
 
@@ -174,27 +204,39 @@
             subToggle.click(function() {
                 // Before Sub toggle
                 if (plugin.settings.beforeSubToggle) { plugin.settings.beforeSubToggle(); }
-                // Hide the submenu's
                 if ($(this).siblings('ul:not(.accessible-hide)').length) {
-                    $(this).siblings('ul').slideUp(animationSpeed, function() {
-                        $(this).removeAttr('style').accessibleHide();
-                        // After Sub toggle
-                        if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
-                        $(window).trigger('resize');
-                    });
-                    $(this).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
-                // SHow the submenus
+                    var subElem = $(this);
+                    hideSubLevel(subElem);
                 } else if ($(this).siblings('ul').hasClass('accessible-hide')) {
-                    $(this).siblings('ul').accessibleShow();
-                    $(this).siblings('ul').hide().slideDown(animationSpeed, function() {
-                        $(this).removeAttr('style');
-                        // After Sub toggle
-                        if (plugin.settings.afterSubToggle) { plugin.settings.afterSubToggle(); }
-                        $(window).trigger('resize');
-                    });
-                    $(this).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.subToggleNameOpen);
+                    var subElem = $(this);
+                    showSubLevel(subElem);
                 }
             });
+
+            // Clicking outside of the menu area to close all open menus
+            if ( plugin.settings.clickAside == true ) {
+                $(document).click(function() {
+                    // Before Main toggle
+                    if (plugin.settings.beforeMainToggle) { plugin.settings.beforeMainToggle(); }
+                    // Hide the menu
+                    if (!$(menuElem).hasClass('accessible-hide')) {
+                        hideMainLevel();
+                    }
+                });
+
+                plugin.settings.parentElement.add(plugin.settings.menuElement).add('.menu_toggle_button').click(function(event){
+                    event.stopPropagation();
+                });
+            }
+
+            // Using the esc key to close all open menus
+            if ( plugin.settings.keyboard == true ) {
+                $(document).bind('keydown', function(e) {
+                    if (e.which == 27) {
+                        hideMainLevel();
+                    }
+                });
+            }
         }
 
         plugin.init();

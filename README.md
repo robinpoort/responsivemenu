@@ -40,9 +40,15 @@ This makes sure that the menu will work both with and without JavaScript enabled
 Properties
 -----------
 
+### parentElement:
+
+The element holding the menu element
+
+__Default:__ this.parent()
+
 ### menuElement:
 
-The actual element that conatins the menu. Mostly &lt;ul&gt; elements.
+The actual element that contains the menu. Mostly &lt;ul&gt; elements.
 
 __Default:__ this.selector
 
@@ -117,6 +123,18 @@ __Default:__ true
 The speed of the animations
 
 __Default:__ 200
+
+### clickAside:
+
+Clicking next to the menu parent or menu element will close all open menus
+
+__Default:__ false
+
+### keyboard:
+
+Pressing esc key will close all open menus
+
+__Default:__ false
 
 ### beforeMenuHide:
 
