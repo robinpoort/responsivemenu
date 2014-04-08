@@ -2,42 +2,52 @@ body {
   background: #fff;
   margin: 0;
   padding: 0;
-  font-family: "Open Sans", Arial, Helvetica, sans-serif; }
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+}
 
 .container {
   padding: 20px;
   max-width: 1024px;
-  margin: auto; }
+  margin: auto;
+}
 
 h1, h2 {
   margin: 0 0 20px;
-  font-weight: 300; }
+  font-weight: 300;
+}
 
 a.cta {
   display: inline-block;
   background: #B5376F;
   padding: 10px 20px;
   color: #fff;
-  text-decoration: none; }
+  text-decoration: none;
+}
 
 .menu_container {
   background: #8bc43c;
-  padding: 10px; }
-  .menu_container span {
+  padding: 10px;
+
+  span {
     font-weight: 700;
-    color: #fff; }
+    color: #fff;
+  }
+}
 
 .menu_container:after {
   content: "";
   display: table;
-  clear: both; }
+  clear: both;
+}
 
 .menu_toggle_button {
-  float: right; }
+  float: right;
+}
 
 .menu {
   clear: both;
-  background: #8bc43c; }
+  background: #8bc43c;
+}
 
 .sub_toggle {
   width: 22px;
@@ -46,37 +56,44 @@ a.cta {
   color: #555;
   font-size: 22px;
   text-align: center;
-  line-height: 22px; }
+  line-height: 22px;
+}
 
 .menu_container ul:after {
   content: "";
   display: table;
-  clear: both; }
+  clear: both;
+}
 
 .menu_container ul {
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 .menu_container ul li {
   list-style: none;
   margin: 0;
   padding: 0;
-  clear: both; }
+  clear: both;
+}
 
 .menu_container ul li a {
   padding: 5px 10px;
   color: #fff;
   text-decoration: none;
-  display: inline-block; }
+  display: inline-block;
+}
 
 .menu_container ul li a:hover {
   background: #fff;
-  color: #8bc43c; }
+  color: #8bc43c;
+}
 
 .menu_container .menu--unfolded li {
   clear: none;
   float: left;
-  margin: 0 5px 0 0; }
-
+  margin: 0 5px 0 0;
+}
 .menu_container .menu--unfolded li a {
-  display: block; }
+  display: block;
+}
