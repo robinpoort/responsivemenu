@@ -1,6 +1,6 @@
 /* @preserve
  * Mobile first responsive menu
- * Copyright 2013 Robin Poort
+ * Copyright 2014 Robin Poort
  * http://www.robinpoort.com
  */
 
@@ -8,11 +8,18 @@
 
 (function($) {
 
+    // Check the position of elements in the markup
+    $.fn.isAfter = function(elem) {
+        if(typeof(elem) == "string") elem = $(elem);
+        return this.add(elem).index(elem) == 0;
+    }
+
     $.responsiveMenu = function(element, options) {
 
         var defaults = {
             parentElement: $(element).parent(),
             menuElement: $(element),
+            toggleWidth: 600,
             toggleButtonClass: 'menu_toggle_button',
             toggleButtonNameClosed: '≡',
             toggleButtonNameOpen: '≡',
@@ -27,9 +34,10 @@
             animations: true,
             animationSpeed: 200,
             clickAside: false,
-            keyboard: false
+            keyboard: false,
+            fixedMenu: false
         },
-            plugin = this;
+        plugin = this;
 
         plugin.settings = {}
 
@@ -47,6 +55,9 @@
             $.fn.accessibleShow = function() {
                 this.removeClass('accessible-hide');
             }
+
+            // Inital set menu to closed
+            $element.addClass('menu--closed');
 
             // Check if the main toggle button exists and if not create it
             if( !$(plugin.settings.toggleButtonClass).length ) {
@@ -70,6 +81,13 @@
                 }
             }
 
+            // Check if the menu is fixed
+            if( plugin.settings.fixedMenu ) {
+                if( !$('.sticky-parent').length ) {
+                    $(plugin.settings.parentElement).wrap('<div class="sticky-parent"></div>');
+                }
+            }
+
 
             // Setting vars
             var menuElem = plugin.settings.menuElement,
@@ -84,22 +102,36 @@
             }
 
 
+
+            // Fixed menu
+            function fixedMenu(width) {
+                // Check if menu is fixed
+                if ( plugin.settings.fixedMenu ) {
+                    $element.addClass('menu--fixed')
+                    var menuHeight = plugin.settings.parentElement.outerHeight();
+                    $('.sticky-parent').css('height', menuHeight);
+                    $('body').css('padding-top', menuHeight);
+                }
+            }
+
+
             // Add appropriate classes
-            function addBodyClass(width, bodyZIndex) {
-                if( bodyZIndex == 0 ) {
-                    $('body').removeClass('menu-unfolded').addClass('menu-folded');
+            function addBodyClass(width) {
+                // Folded?
+                if( $(window).width() < plugin.settings.toggleWidth ) {
+                    $element.removeClass('menu--unfolded').addClass('menu--folded');
                 } else {
-                    $('body').removeClass('menu-folded').addClass('menu-unfolded');
+                    $element.removeClass('menu--folded').addClass('menu--unfolded');
                 }
             }
 
 
             // Toggle button action
-            function toggleButtons(width, bodyZIndex) {
+            function toggleButtons(width) {
                 // Before Menu Hide
                 if (plugin.settings.beforeMenuHide) { plugin.settings.beforeMenuHide(); }
                 // If screen size is small
-                if( bodyZIndex == 0 ) {
+                if( $(window).width() < plugin.settings.toggleWidth ) {
                     // Main toggle
                     if (toggleButton.hasClass(plugin.settings.classNameClosed)) {
                         $(menuElem).accessibleHide();
@@ -116,7 +148,7 @@
                     }
                 }
                 // If screen size is big
-                if( bodyZIndex == 1 ) {
+                if( $(window).width() >= plugin.settings.toggleWidth ) {
 
                     // Setting submenus to hide as standard when getting back smaller
                     subToggle.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
@@ -139,11 +171,11 @@
             // Run again on window resize and ready
             $(window).on('resize ready', function(event) {
                 // Get the window width or get the body width as a fallback
-                var width = event.target.innerWidth || $('body').width(),
-                    bodyZIndex = $('body').css('z-index');
+                var width = event.target.innerWidth || $('body').width();
                 // Functions
-                toggleButtons(width, bodyZIndex);
-                addBodyClass(width, bodyZIndex);
+                addBodyClass(width);
+                toggleButtons(width);
+                fixedMenu(width);
             });
 
             function showMainLevel() {
@@ -152,7 +184,16 @@
                     $(menuElem).removeAttr('style');
                     // After Main toggle
                     if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                    $element.removeClass('menu--closed').addClass('menu--open');
                     $(window).trigger('resize');
+                    // When element is larger than window
+                    var windowHeight = $(window).height(),
+                        elementHeight = $element.outerHeight(),
+                        parentHeight = plugin.settings.parentElement.height();
+                    if ( elementHeight >= windowHeight && plugin.settings.fixedMenu ) {
+                        $('body').addClass('menu-too-big--body');
+                        $element.addClass('menu-too-big').css({'max-height': windowHeight-parentHeight});
+                    }
                 });
                 $(toggleButton).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
             }
@@ -163,7 +204,13 @@
                     $(menuElem).accessibleHide();
                     // After Main toggle
                     if (plugin.settings.afterMainToggle) { plugin.settings.afterMainToggle(); }
+                    $element.removeClass('menu--open').addClass('menu--closed');
                     $(window).trigger('resize');
+                    // When element is larger than window
+                    if ( $element.hasClass('menu-too-big') ) {
+                        $('body').removeClass('menu-too-big--body');
+                        $element.css({'max-height': 'none'});
+                    }
                 });
                 $(toggleButton).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
             }
@@ -214,7 +261,7 @@
             });
 
             // Clicking outside of the menu area to close all open menus
-            if ( plugin.settings.clickAside == true ) {
+            if ( plugin.settings.clickAside ) {
                 $(document).click(function() {
                     // Before Main toggle
                     if (plugin.settings.beforeMainToggle) { plugin.settings.beforeMainToggle(); }
@@ -230,18 +277,62 @@
             }
 
             // Using the esc key to close all open menus
-            if ( plugin.settings.keyboard == true ) {
+            if ( plugin.settings.keyboard ) {
                 $(document).bind('keydown', function(e) {
                     if (e.which == 27) {
                         hideMainLevel();
                     }
                 });
             }
+
+            // Anchor linking
+            function anchorLink(element) {
+                // Prevent default behaviour
+                event.preventDefault();
+
+                // Setting variables
+                var original_target = element,
+                    target = $(original_target),
+                    scrollTopAmount = Math.ceil(target.offset().top),
+                    scrollUntilHeight2 = 0,
+                    scrollUntilHeight = 0;
+
+                // Add or reduce height from scrollTop
+                $('.sticky-parent').each(function () {
+                    // Add height
+                    if ( target.isAfter( $(this) ) ) {
+                        scrollUntilHeight2 += $(this).outerHeight();
+                    }
+                    scrollUntilHeight = scrollUntilHeight2;
+                })
+                scrollTopAmount -= scrollUntilHeight;
+                window.location.hash = original_target;
+                $('html,body').scrollTop(scrollTopAmount);
+            }
+
+            if( $('.sticky-parent').length ) {
+                // Anchor links
+                $('a[href*=#]:not([href=#])').click(function() {
+                    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+                        var element = $(this).prop('hash');
+                        anchorLink(element);
+                    }
+                });
+                // Window.location.hash
+                $(window).load(function() {
+                    if(window.location.hash) {
+                        var element = window.location.hash;
+                        anchorLink(element);
+                    }
+                });
+            }
+
         }
 
         plugin.init();
 
     }
+
 
     // add the plugin to the jQuery.fn object
     $.fn.responsiveMenu = function(options) {

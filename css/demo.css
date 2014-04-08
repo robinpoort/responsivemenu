@@ -19,7 +19,7 @@ body {
   float: right;
 }
 
-.responsive-menu {
+.menu {
   clear: both;
 }
 
@@ -49,24 +49,25 @@ body {
   margin: 0;
   padding: 0;
   background: #aaa;
+  clear: both;
 }
 
 .menu_container ul li a {
   padding: 5px 10px;
   color: #fff;
   text-decoration: none;
+  display: inline-block;
 }
 
 .menu_container ul li a:hover {
   background: #888;
 }
 
-@media screen and (min-width: 600px) {
-  .menu_container ul li {
-    float: left;
-    margin: 0 5px 0 0;
-  }
-  .menu_container ul li a {
-    display: block;
-  }
+.menu_container .menu.menu--unfolded li {
+  clear: none;
+  float: left;
+  margin: 0 5px 0 0;
+}
+.menu_container .menu.menu--unfolded li a {
+  display: block;
 }
