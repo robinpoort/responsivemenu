@@ -178,8 +178,8 @@
                 var width = event.target.innerWidth || $('body').width();
                 // Functions
                 addBodyClass(width);
-                fixedMenu();
                 toggleButtons(width);
+                fixedMenu();
             });
 
 
