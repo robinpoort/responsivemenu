@@ -22,7 +22,7 @@
             toggleWidth: 600,
             toggleButtonClass: 'menu_toggle_button',
             toggleButtonNameClosed: '≡',
-            toggleButtonNameOpen: '≡',
+            toggleButtonNameOpen: '&times;',
             toggleButtonLocation: 'before',
             subToggleClass: 'sub_toggle',
             subToggleNameClosed: '+',
@@ -33,6 +33,7 @@
             classNameOpen: 'rm-open',
             animations: true,
             animationSpeed: 200,
+            scrollTopDuration: 1,
             clickAside: false,
             keyboard: false,
             fixedMenu: false
@@ -56,8 +57,10 @@
                 this.removeClass('accessible-hide');
             }
 
+
             // Inital set menu to closed
             $element.addClass('menu--closed');
+
 
             // Check if the main toggle button exists and if not create it
             if( !$(plugin.settings.toggleButtonClass).length ) {
@@ -70,6 +73,7 @@
                 }
             }
 
+
             // Check if the sub toggle buttons exists and if not create them
             if( !$(plugin.settings.subToggleClass).length ) {
                 // Creating the sub toggle buttons
@@ -81,7 +85,8 @@
                 }
             }
 
-            // Check if the menu is fixed
+
+            // Check if the menu is fixed and if so check if sticky-parent already exists
             if( plugin.settings.fixedMenu ) {
                 if( !$('.sticky-parent').length ) {
                     $(plugin.settings.parentElement).wrap('<div class="sticky-parent"></div>');
@@ -96,6 +101,7 @@
                 subToggle = $(menuElem).find('.' + plugin.settings.subToggleClass),
                 animationSpeed = plugin.settings.animationSpeed;
 
+
             // Set the animationspeed to 1 if animations are not being used
             if ( plugin.settings.animations == false ) {
                 animationSpeed = 1;
@@ -103,9 +109,18 @@
 
 
 
+            // Add appropriate classes
+            function addBodyClass(width) {
+                if( width < plugin.settings.toggleWidth ) {
+                    $element.removeClass('menu--unfolded').addClass('menu--folded');
+                } else {
+                    $element.removeClass('menu--folded').addClass('menu--unfolded');
+                }
+            }
+
+
             // Fixed menu
-            function fixedMenu(width) {
-                // Check if menu is fixed
+            function fixedMenu() {
                 if ( plugin.settings.fixedMenu ) {
                     $element.addClass('menu--fixed')
                     var menuHeight = plugin.settings.parentElement.outerHeight();
@@ -115,23 +130,12 @@
             }
 
 
-            // Add appropriate classes
-            function addBodyClass(width) {
-                // Folded?
-                if( $(window).width() < plugin.settings.toggleWidth ) {
-                    $element.removeClass('menu--unfolded').addClass('menu--folded');
-                } else {
-                    $element.removeClass('menu--folded').addClass('menu--unfolded');
-                }
-            }
-
-
             // Toggle button action
             function toggleButtons(width) {
                 // Before Menu Hide
                 if (plugin.settings.beforeMenuHide) { plugin.settings.beforeMenuHide(); }
                 // If screen size is small
-                if( $(window).width() < plugin.settings.toggleWidth ) {
+                if( width < plugin.settings.toggleWidth ) {
                     // Main toggle
                     if (toggleButton.hasClass(plugin.settings.classNameClosed)) {
                         $(menuElem).accessibleHide();
@@ -148,7 +152,7 @@
                     }
                 }
                 // If screen size is big
-                if( $(window).width() >= plugin.settings.toggleWidth ) {
+                if( width >= plugin.settings.toggleWidth ) {
 
                     // Setting submenus to hide as standard when getting back smaller
                     subToggle.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
@@ -174,9 +178,10 @@
                 var width = event.target.innerWidth || $('body').width();
                 // Functions
                 addBodyClass(width);
+                fixedMenu();
                 toggleButtons(width);
-                fixedMenu(width);
             });
+
 
             function showMainLevel() {
                 $(menuElem).accessibleShow();
@@ -198,6 +203,7 @@
                 $(toggleButton).removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.toggleButtonNameOpen);
             }
 
+
             function hideMainLevel() {
                 $(menuElem).slideUp(animationSpeed, function() {
                     $(menuElem).removeAttr('style');
@@ -215,6 +221,7 @@
                 $(toggleButton).removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.toggleButtonNameClosed);
             }
 
+
             function showSubLevel(subElem) {
                 subElem.siblings('ul').accessibleShow();
                 subElem.siblings('ul').hide().slideDown(animationSpeed, function() {
@@ -226,6 +233,7 @@
                 subElem.removeClass(plugin.settings.classNameClosed).addClass(plugin.settings.classNameOpen).html(plugin.settings.subToggleNameOpen);
             }
 
+
             function hideSubLevel(subElem) {
                 subElem.siblings('ul').slideUp(animationSpeed, function() {
                     $(this).removeAttr('style').accessibleHide();
@@ -235,6 +243,7 @@
                 });
                 subElem.removeClass(plugin.settings.classNameOpen).addClass(plugin.settings.classNameClosed).html(plugin.settings.subToggleNameClosed);
             }
+
 
             // Use the toggle button
             toggleButton.click(function() {
@@ -246,6 +255,7 @@
                     hideMainLevel();
                 }
             });
+
 
             // Use the sub toggle button
             subToggle.click(function() {
@@ -259,6 +269,7 @@
                     showSubLevel(subElem);
                 }
             });
+
 
             // Clicking outside of the menu area to close all open menus
             if ( plugin.settings.clickAside ) {
@@ -276,6 +287,7 @@
                 });
             }
 
+
             // Using the esc key to close all open menus
             if ( plugin.settings.keyboard ) {
                 $(document).bind('keydown', function(e) {
@@ -285,7 +297,8 @@
                 });
             }
 
-            // Anchor linking
+
+            // Anchor linking function. Add pixels when menu is fixed
             function anchorLink(element) {
                 // Prevent default behaviour
                 event.preventDefault();
@@ -307,9 +320,11 @@
                 })
                 scrollTopAmount -= scrollUntilHeight;
                 window.location.hash = original_target;
-                $('html,body').scrollTop(scrollTopAmount);
+                $('html,body').animate({scrollTop: scrollTopAmount }, plugin.settings.scrollTopDuration);
             }
 
+
+            // When clicking on anchor links or when there's a has in the URL
             if( $('.sticky-parent').length ) {
                 // Anchor links
                 $('a[href*=#]:not([href=#])').click(function() {
@@ -326,7 +341,6 @@
                     }
                 });
             }
-
         }
 
         plugin.init();
