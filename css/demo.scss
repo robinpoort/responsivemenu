@@ -68,6 +68,24 @@ a.cta {
 .menu_container ul {
   margin: 0;
   padding: 0;
+
+  li.parent > a:after {
+    content: "  •";
+  }
+
+  ul {
+    background: #8bc43c;
+    margin: 0;
+    padding: 0;
+    width: 200px;
+
+    li {
+      margin: 0;
+      padding: 0;
+      display: block;
+      width: 200px;
+    }
+  }
 }
 
 .menu_container ul li {
