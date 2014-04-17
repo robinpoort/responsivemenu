@@ -277,7 +277,7 @@
                     // Before Main toggle
                     if (plugin.settings.beforeMainToggle) { plugin.settings.beforeMainToggle(); }
                     // Hide the menu
-                    if (!$(menuElem).hasClass('accessible-hide')) {
+                    if ($(menuElem).hasClass('menu--open')) {
                         hideMainLevel();
                     }
                 });
